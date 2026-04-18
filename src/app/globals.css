@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -7,9 +8,34 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-inter), 'Inter', sans-serif;
+  --font-serif: var(--font-playfair), 'Playfair Display', serif;
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+
+  /* Rose palette */
+  --color-rose-50: #fdf2f6;
+  --color-rose-100: #fce7ef;
+  --color-rose-200: #f8d0e0;
+  --color-rose-300: #f4aac8;
+  --color-rose-400: #ee7aaa;
+  --color-rose-500: #e07898;
+  --color-rose-600: #c2607e;
+  --color-rose-700: #a04d67;
+  --color-rose-800: #854057;
+  --color-rose-900: #6e3649;
+
+  /* Lilac palette */
+  --color-lilac-50: #f5f0fc;
+  --color-lilac-100: #ede3f8;
+  --color-lilac-200: #dccbf3;
+  --color-lilac-300: #c4a8e8;
+  --color-lilac-400: #ab83db;
+  --color-lilac-500: #9b6bc5;
+  --color-lilac-600: #8452a9;
+  --color-lilac-700: #6e4190;
+  --color-lilac-800: #5c3778;
+  --color-lilac-900: #4d2e62;
+
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -50,29 +76,29 @@
 
 :root {
   --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --foreground: oklch(0.22 0.05 300);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.22 0.05 300);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.22 0.05 300);
+  --primary: oklch(0.45 0.12 300);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.97 0.01 300);
+  --secondary-foreground: oklch(0.22 0.05 300);
+  --muted: oklch(0.97 0.01 300);
+  --muted-foreground: oklch(0.55 0.05 300);
+  --accent: oklch(0.97 0.01 300);
+  --accent-foreground: oklch(0.22 0.05 300);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --border: oklch(0.92 0.02 300);
+  --input: oklch(0.92 0.02 300);
+  --ring: oklch(0.55 0.12 300);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
+  --radius: 1rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -121,10 +147,233 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
   }
+
+  h1, h2 {
+    font-family: 'Playfair Display', serif;
+  }
+
   html {
     @apply font-sans;
+  }
+
+  /* ─── BOTÃO ROSA (cliente) ─── */
+  .btn-rose {
+    background: linear-gradient(135deg, #e07898 0%, #c2607e 100%);
+    color: white !important;
+    border: none !important;
+    border-radius: 24px !important;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 4px 16px rgba(194, 96, 126, 0.30);
+  }
+
+  .btn-rose:hover:not(:disabled) {
+    opacity: 0.92;
+    box-shadow: 0 6px 24px rgba(194, 96, 126, 0.45);
+    transform: translateY(-1px);
+  }
+
+  .btn-rose:active {
+    transform: scale(0.98);
+  }
+
+  .btn-rose:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  /* ─── GLASS CARD LANDING (versão reforçada) ─── */
+  .glass-card-landing {
+    background: rgba(255, 255, 255, 0.28);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border-radius: 24px;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.55) inset,
+      0 2px 0 rgba(255, 255, 255, 0.70) inset,
+      0 12px 40px rgba(140, 82, 169, 0.10),
+      0 2px 8px rgba(0, 0, 0, 0.04);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .glass-card-landing:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.65) inset,
+      0 2px 0 rgba(255, 255, 255, 0.80) inset,
+      0 20px 56px rgba(140, 82, 169, 0.16),
+      0 4px 12px rgba(0, 0, 0, 0.06);
+  }
+
+  /* ─── GLASS CARD LANDING ATIVO (com PIN aberto) ─── */
+  .glass-card-landing-active {
+    background: rgba(255, 255, 255, 0.34);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border-radius: 24px;
+    box-shadow:
+      0 0 0 1.5px rgba(194, 96, 126, 0.30) inset,
+      0 2px 0 rgba(255, 255, 255, 0.70) inset,
+      0 20px 56px rgba(194, 96, 126, 0.14),
+      0 4px 12px rgba(0, 0, 0, 0.06);
+  }
+
+  /* ─── GLASS DIVIDER ─── */
+  .glass-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(180, 140, 220, 0.25), transparent);
+  }
+
+  /* ─── SCROLLBAR ─── */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(180, 140, 220, 0.3);
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(140, 82, 169, 0.4);
+  }
+}
+
+@layer components {
+
+  /* ─── GLASSMORPHISM CARD ─── */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.20);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.38);
+    border-radius: 16px;
+    box-shadow:
+      0 8px 32px rgba(160, 100, 200, 0.08),
+      0 1px 0 rgba(255, 255, 255, 0.5) inset;
+  }
+
+  .glass-card-dark {
+    background: rgba(90, 50, 120, 0.15);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+  }
+
+  /* ─── GLASS INPUT ─── */
+  .glass-input {
+    background: rgba(255, 255, 255, 0.35) !important;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(180, 140, 220, 0.30) !important;
+    border-radius: 12px !important;
+    color: #3a2540 !important;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .glass-input:focus {
+    outline: none !important;
+    border-color: rgba(140, 82, 169, 0.55) !important;
+    box-shadow: 0 0 0 3px rgba(140, 82, 169, 0.12) !important;
+  }
+
+  .glass-input::placeholder {
+    color: rgba(122, 85, 144, 0.45);
+  }
+
+  /* ─── BOTÃO PRIMÁRIO ─── */
+  .btn-primary {
+    background: linear-gradient(135deg, #c2607e 0%, #8452a9 100%);
+    color: white !important;
+    border: none !important;
+    border-radius: 24px !important;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 4px 16px rgba(140, 82, 169, 0.25);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    opacity: 0.92;
+    box-shadow: 0 6px 24px rgba(140, 82, 169, 0.35);
+    transform: translateY(-1px);
+  }
+
+  .btn-primary:active {
+    transform: scale(0.98);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  /* ─── BACKGROUND GRADIENTE DA PÁGINA ─── */
+  .page-bg {
+    background: linear-gradient(135deg, #fdf2f6 0%, #f0e8fd 50%, #fce8f3 100%);
+    min-height: 100vh;
+  }
+
+  /* ─── BADGE DE STATUS ─── */
+  .status-badge {
+    @apply text-xs px-3 py-1 rounded-full font-medium;
+  }
+
+  .status-active {
+    @apply bg-blue-100 text-blue-700;
+  }
+
+  .status-in-progress {
+    background: rgba(251, 191, 36, 0.15);
+    color: #92400e;
+  }
+
+  .status-completed {
+    @apply bg-green-100 text-green-700;
+  }
+
+  .status-cancelled {
+    @apply bg-gray-100 text-gray-500;
+  }
+
+  /* ─── TIMELINE STEPS ─── */
+  .timeline-line {
+    position: absolute;
+    left: 16px;
+    top: 32px;
+    bottom: 16px;
+    width: 2px;
+    background: linear-gradient(180deg, #c4a8e8 0%, #f4aac8 100%);
+    opacity: 0.4;
+  }
+
+  .timeline-step-completed .timeline-dot {
+    background: linear-gradient(135deg, #8452a9, #c2607e);
+    border-color: transparent;
+    color: white;
+  }
+
+  .timeline-step-current .timeline-dot {
+    background: white;
+    border-color: #e07898;
+    color: #e07898;
+    box-shadow: 0 0 0 4px rgba(224, 120, 152, 0.15);
+  }
+
+  .timeline-step-pending .timeline-dot {
+    background: rgba(255,255,255,0.5);
+    border-color: rgba(196,168,232,0.4);
+    color: rgba(122, 85, 144, 0.3);
   }
 }

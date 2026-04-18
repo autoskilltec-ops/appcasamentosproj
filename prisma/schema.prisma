@@ -1,0 +1,179 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────────────────────────
+// PRODUTOR (usuário admin da plataforma)
+// ─────────────────────────────────────────────
+model Producer {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String   // hash bcrypt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  events Event[]
+
+  @@map("producers")
+}
+
+// ─────────────────────────────────────────────
+// EVENTO DE CASAMENTO
+// ─────────────────────────────────────────────
+model Event {
+  id           String      @id @default(cuid())
+  coupleName   String      // Ex: "Ana & Pedro"
+  groomName    String
+  brideName    String
+  weddingDate  DateTime
+  venueName    String
+  pin          String      @unique // PIN de 6 dígitos para o cliente
+  status       EventStatus @default(ACTIVE)
+  currentStage Int         @default(0) // 0=início, 1=estimativas, 2=reunião, 3=proposta, 4=checklist
+
+  producerId   String
+  producer     Producer @relation(fields: [producerId], references: [id])
+
+  estimate     Estimate?
+  meeting      Meeting?
+  proposal     Proposal?
+  checklistItems ChecklistItem[]
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([producerId])
+  @@index([status])
+  @@index([weddingDate])
+  @@map("events")
+}
+
+enum EventStatus {
+  ACTIVE
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+// ─────────────────────────────────────────────
+// ESTIMATIVAS (preenchidas pelo cliente)
+// ─────────────────────────────────────────────
+model Estimate {
+  id              String   @id @default(cuid())
+  guestCount      Int
+  budgetMin       Float
+  budgetMax       Float
+  weddingStyles   String[] // JSON array: CLASSIC, RUSTIC, MODERN, BOHO, DESTINATION, MINIMALIST, RELIGIOUS, OTHER
+  period          String   // DAYTIME, NIGHTTIME, BOTH
+  priorities      String[] // Array ordenado: DECORATION, BUFFET, MUSIC, PHOTO_VIDEO, VENUE, CEREMONY, HONEYMOON
+  notes           String?
+
+  eventId         String @unique
+  event           Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("estimates")
+}
+
+// ─────────────────────────────────────────────
+// REUNIÃO INICIAL (preenchida pelo produtor)
+// ─────────────────────────────────────────────
+model Meeting {
+  id           String        @id @default(cuid())
+  scheduledAt  DateTime
+  modality     MeetingMode   // PRESENTIAL, ONLINE
+  meetingLink  String?       // Link da videochamada (se online)
+  briefing     String?       // Texto rico do briefing
+  minutes      String?       // Ata da reunião (texto rico)
+  status       MeetingStatus @default(SCHEDULED)
+
+  eventId      String @unique
+  event        Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("meetings")
+}
+
+enum MeetingMode {
+  PRESENTIAL
+  ONLINE
+}
+
+enum MeetingStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}
+
+// ─────────────────────────────────────────────
+// PROPOSTA (gerenciada pelo produtor, rastreamento de visualização pelo cliente)
+// ─────────────────────────────────────────────
+model Proposal {
+  id             String    @id @default(cuid())
+  link           String    // Link externo (Google Slides, Canva, etc.)
+  clientNotes    String?   // Observações do cliente sobre a proposta
+  viewedAt       DateTime? // Null até o cliente visualizar
+  viewedByClient Boolean   @default(false)
+
+  eventId        String @unique
+  event          Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("proposals")
+}
+
+// ─────────────────────────────────────────────
+// CHECKLIST DE ITENS (gerenciado pelo produtor)
+// ─────────────────────────────────────────────
+model ChecklistItem {
+  id            String          @id @default(cuid())
+  location      String          // Ex: Entrada, Salão principal, Jardim, Altar
+  name          String          // Ex: Mesa com 5 cadeiras
+  itemType      ChecklistType   // FURNITURE, LIGHTING, FLOWERS, DECORATION, AUDIOVISUAL, BUFFET, OTHER
+  supplier      String?         // Nome da empresa/fornecedor
+  quantity      Int             @default(1)
+  unitPrice     Float           @default(0)
+  damageValue   Float           @default(0)
+  totalPrice    Float           @default(0) // Calculado: quantity * unitPrice
+  status        ItemStatus      @default(PENDING)
+  notes         String?
+
+  eventId       String
+  event         Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([eventId])
+  @@index([location])
+  @@map("checklist_items")
+}
+
+enum ChecklistType {
+  FURNITURE
+  LIGHTING
+  FLOWERS
+  DECORATION
+  AUDIOVISUAL
+  BUFFET
+  OTHER
+}
+
+enum ItemStatus {
+  PENDING
+  CONFIRMED
+  DELIVERED
+  DAMAGED
+}
