@@ -1,29 +1,23 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ExternalLink, Eye, ArrowLeft } from "lucide-react"
 import { toast } from "sonner"
+import { useClientAuth } from "@/hooks/useClientAuth"
 
 export default function ClientProposalPage() {
-  const router = useRouter()
+  const { eventId, clientPin, loading: authLoading } = useClientAuth()
   const [proposal, setProposal] = useState<any>(null)
   const [notes, setNotes] = useState("")
   const [saving, setSaving] = useState(false)
-  const [eventId, setEventId] = useState<string | null>(null)
-  const [clientPin, setClientPin] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [fetchLoading, setFetchLoading] = useState(true)
 
   useEffect(() => {
-    const id = sessionStorage.getItem("clientEventId")
-    const pin = sessionStorage.getItem("clientPin")
-    if (!id || !pin) { router.replace("/"); return }
-    setEventId(id)
-    setClientPin(pin)
+    if (authLoading || !eventId) return
 
-    fetch(`/api/eventos/${id}/proposta`)
+    fetch(`/api/eventos/${eventId}/proposta`)
       .then(r => r.json())
       .then(data => {
         if (data) {
@@ -31,8 +25,8 @@ export default function ClientProposalPage() {
           setNotes(data.clientNotes || "")
         }
       })
-      .finally(() => setLoading(false))
-  }, [router])
+      .finally(() => setFetchLoading(false))
+  }, [authLoading, eventId])
 
   async function handleViewProposal() {
     if (!eventId || !clientPin || !proposal?.link) return
@@ -63,7 +57,7 @@ export default function ClientProposalPage() {
     }
   }
 
-  if (loading) return null
+  if (authLoading || fetchLoading) return null
 
   if (!proposal) {
     return (

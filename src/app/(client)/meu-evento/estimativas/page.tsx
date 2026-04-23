@@ -11,6 +11,8 @@ import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import Link from "next/link"
 import { ArrowLeft, Lock } from "lucide-react"
+import { useClientAuth } from "@/hooks/useClientAuth"
+import { formatCurrency } from "@/lib/utils"
 
 const schema = z.object({
   guestCount: z.coerce.number().int().min(1),
@@ -46,16 +48,11 @@ const PERIOD_LABELS: Record<string, string> = {
   DAYTIME: "Diurno", NIGHTTIME: "Noturno", BOTH: "Ambos",
 }
 
-function formatCurrency(v: number) {
-  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v)
-}
-
 export default function EstimatesPage() {
   const router = useRouter()
+  const { eventId, clientPin, loading: authLoading } = useClientAuth()
   const [loading, setLoading] = useState(false)
   const [pageLoading, setPageLoading] = useState(true)
-  const [eventId, setEventId] = useState<string | null>(null)
-  const [clientPin, setClientPin] = useState<string | null>(null)
   const [existing, setExisting] = useState<any | null>(null)
 
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm({
@@ -68,17 +65,13 @@ export default function EstimatesPage() {
   })
 
   useEffect(() => {
-    const id = sessionStorage.getItem("clientEventId")
-    const pin = sessionStorage.getItem("clientPin")
-    if (!id || !pin) { router.replace("/"); return }
-    setEventId(id)
-    setClientPin(pin)
+    if (authLoading || !eventId) return
 
-    fetch(`/api/eventos/${id}/estimativas`)
+    fetch(`/api/eventos/${eventId}/estimativas`)
       .then(r => r.json())
       .then(data => { if (data?.id) setExisting(data) })
       .finally(() => setPageLoading(false))
-  }, [router])
+  }, [authLoading, eventId])
 
   const selectedStyles = watch("weddingStyles") as string[]
   const selectedPriorities = watch("priorities") as string[]
@@ -114,7 +107,7 @@ export default function EstimatesPage() {
     }
   }
 
-  if (pageLoading) return (
+  if (authLoading || pageLoading) return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-50 via-lilac-50 to-rose-100">
       <div className="w-6 h-6 rounded-full border-2 border-lilac-400 border-t-transparent animate-spin" />
     </div>

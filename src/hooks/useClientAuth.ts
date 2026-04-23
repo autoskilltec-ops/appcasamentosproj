@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 export function useClientAuth() {
   const router = useRouter()
   const [eventId, setEventId] = useState<string | null>(null)
+  const [clientPin, setClientPin] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -18,8 +19,9 @@ export function useClientAuth() {
     }
 
     setEventId(id)
+    setClientPin(pin)
     setLoading(false)
   }, [router])
 
-  return { eventId, loading }
+  return { eventId, clientPin, loading }
 }

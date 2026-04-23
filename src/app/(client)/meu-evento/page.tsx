@@ -8,6 +8,8 @@ import {
   ClipboardList, FileText, LogOut, CheckCircle2,
   Clock, Heart, ChevronRight, Package,
 } from "lucide-react"
+import { useClientAuth } from "@/hooks/useClientAuth"
+import { formatCurrency } from "@/lib/utils"
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   PENDING:   { label: "Pendente",  color: "#b8a6d0" },
@@ -40,10 +42,6 @@ const PERIOD_LABELS: Record<string, string> = {
   BOTH: "Diurno e Noturno",
 }
 
-function formatCurrency(v: number) {
-  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v)
-}
-
 function formatDate(d: string) {
   return new Date(d).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })
 }
@@ -55,22 +53,21 @@ function daysUntil(dateStr: string) {
 
 export default function MeuEventoPage() {
   const router = useRouter()
+  const { clientPin, loading: authLoading } = useClientAuth()
   const [event, setEvent] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
+  const [fetchLoading, setFetchLoading] = useState(true)
 
   useEffect(() => {
-    const pin = sessionStorage.getItem("clientPin")
-    const id = sessionStorage.getItem("clientEventId")
-    if (!pin || !id) { router.replace("/"); return }
+    if (authLoading || !clientPin) return
 
-    fetch(`/api/client/evento?pin=${pin}`)
+    fetch(`/api/client/evento?pin=${clientPin}`)
       .then(r => r.ok ? r.json() : null)
       .then(data => {
         if (!data) { router.replace("/"); return }
         setEvent(data)
       })
-      .finally(() => setLoading(false))
-  }, [router])
+      .finally(() => setFetchLoading(false))
+  }, [authLoading, clientPin, router])
 
   function handleLogout() {
     sessionStorage.removeItem("clientPin")
@@ -78,7 +75,7 @@ export default function MeuEventoPage() {
     router.push("/")
   }
 
-  if (loading) return (
+  if (authLoading || fetchLoading) return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-50 via-lilac-50 to-rose-100">
       <div className="w-6 h-6 rounded-full border-2 border-lilac-400 border-t-transparent animate-spin" />
     </div>
@@ -251,12 +248,12 @@ export default function MeuEventoPage() {
               <div className="space-y-2 pt-1">
                 <p className="text-[11px] text-lilac-400 uppercase tracking-wide">Por categoria</p>
                 {topTypes.map(([type, value]) => {
-                  const pct = financial.totalCommitted > 0 ? (value / financial.totalCommitted) * 100 : 0
+                  const pct = financial.totalCommitted > 0 ? ((value as number) / financial.totalCommitted) * 100 : 0
                   return (
                     <div key={type}>
                       <div className="flex justify-between text-xs text-lilac-600 mb-0.5">
                         <span>{TYPE_LABELS[type] ?? type}</span>
-                        <span className="font-medium">{formatCurrency(value)}</span>
+                        <span className="font-medium">{formatCurrency(value as number)}</span>
                       </div>
                       <div className="h-1.5 bg-lilac-100 rounded-full overflow-hidden">
                         <div
@@ -319,7 +316,7 @@ export default function MeuEventoPage() {
                     {location}
                   </p>
                   <div className="space-y-1.5">
-                    {items.map((item: any) => {
+                    {(items as any[]).map((item: any) => {
                       const s = STATUS_LABELS[item.status] ?? { label: item.status, color: "#b8a6d0" }
                       return (
                         <div

@@ -3,12 +3,17 @@
 import { useState, useEffect, useCallback } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
+import dynamic from "next/dynamic"
 import { ChecklistGroupByLocal } from "@/components/checklist/ChecklistGroupByLocal"
-import { ChecklistItemForm } from "@/components/checklist/ChecklistItemForm"
 import { ChecklistTotals } from "@/components/checklist/ChecklistTotals"
 import { Button } from "@/components/ui/button"
 import { Plus, ArrowLeft } from "lucide-react"
 import { toast } from "sonner"
+
+const ChecklistItemForm = dynamic(
+  () => import("@/components/checklist/ChecklistItemForm").then(m => m.ChecklistItemForm),
+  { ssr: false }
+)
 
 export default function ChecklistPage() {
   const { id } = useParams<{ id: string }>()
