@@ -5,6 +5,7 @@ import path from "path";
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ["192.168.0.5"],
   turbopack: {
     root: path.resolve(__dirname),
   },

@@ -237,7 +237,7 @@ export default async function EventDetailPage({ params }: Props) {
                 />
               </div>
               <div className="flex justify-between text-xs text-lilac-400 mt-1.5">
-                <span>R$ 0</span>
+                <span className={totalCommitted > budget ? "text-red-500 font-medium" : ""}>{formatCurrency(totalCommitted)}</span>
                 <span>{formatCurrency(budget)}</span>
               </div>
             </div>

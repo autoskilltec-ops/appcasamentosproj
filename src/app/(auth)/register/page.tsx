@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -12,13 +11,18 @@ import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 
 const schema = z.object({
+  name: z.string().min(2, "Nome deve ter ao menos 2 caracteres"),
   email: z.string().email("E-mail inválido"),
   password: z.string().min(6, "Senha deve ter ao menos 6 caracteres"),
+  confirmPassword: z.string(),
+}).refine((d) => d.password === d.confirmPassword, {
+  message: "As senhas não coincidem",
+  path: ["confirmPassword"],
 })
 
 type FormData = z.infer<typeof schema>
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
 
@@ -29,18 +33,24 @@ export default function LoginPage() {
   async function onSubmit(data: FormData) {
     setLoading(true)
     try {
-      const result = await signIn("credentials", {
-        email: data.email,
-        password: data.password,
-        redirect: false,
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: data.name, email: data.email, password: data.password }),
       })
 
-      if (result?.error) {
-        toast.error("E-mail ou senha incorretos")
+      if (res.status === 409) {
+        toast.error("E-mail já cadastrado")
         return
       }
 
-      router.push("/dashboard")
+      if (!res.ok) {
+        toast.error("Erro ao criar conta. Tente novamente.")
+        return
+      }
+
+      toast.success("Conta criada! Faça o login.")
+      router.push("/login")
     } finally {
       setLoading(false)
     }
@@ -51,10 +61,16 @@ export default function LoginPage() {
       <div className="glass-card w-full max-w-md p-8">
         <div className="text-center mb-8">
           <h1 className="font-serif text-3xl text-lilac-800 mb-2">Wedding Manager</h1>
-          <p className="text-sm text-lilac-500">Acesso do produtor</p>
+          <p className="text-sm text-lilac-500">Criar conta de produtor</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div>
+            <Label htmlFor="name">Nome</Label>
+            <Input id="name" type="text" {...register("name")} className="glass-input mt-1" />
+            {errors.name && <p className="text-rose-500 text-xs mt-1">{errors.name.message}</p>}
+          </div>
+
           <div>
             <Label htmlFor="email">E-mail</Label>
             <Input id="email" type="email" {...register("email")} className="glass-input mt-1" />
@@ -67,17 +83,22 @@ export default function LoginPage() {
             {errors.password && <p className="text-rose-500 text-xs mt-1">{errors.password.message}</p>}
           </div>
 
+          <div>
+            <Label htmlFor="confirmPassword">Confirmar senha</Label>
+            <Input id="confirmPassword" type="password" {...register("confirmPassword")} className="glass-input mt-1" />
+            {errors.confirmPassword && <p className="text-rose-500 text-xs mt-1">{errors.confirmPassword.message}</p>}
+          </div>
+
           <Button type="submit" disabled={loading} className="w-full btn-primary mt-6">
-            {loading ? "Entrando..." : "Entrar"}
+            {loading ? "Criando conta..." : "Criar conta"}
           </Button>
         </form>
 
-        <div className="mt-6 pt-6 border-t border-lilac-200 text-center space-y-2">
+        <div className="mt-6 pt-6 border-t border-lilac-200 text-center">
           <p className="text-xs text-lilac-400">
-            Não tem conta?{" "}
-            <a href="/register" className="text-lilac-600 underline">Criar conta</a>
+            Já tem conta?{" "}
+            <a href="/login" className="text-lilac-600 underline">Fazer login</a>
           </p>
-          <p className="text-xs text-lilac-400">É cliente? <a href="/" className="text-lilac-600 underline">Acesse com seu PIN</a></p>
         </div>
       </div>
     </div>
