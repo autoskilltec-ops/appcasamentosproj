@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { signIn } from "next-auth/react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -20,6 +20,12 @@ type FormData = z.infer<typeof schema>
 
 export default function LoginPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const rawCallback = searchParams.get("callbackUrl") || "/dashboard"
+  const callbackUrl = (() => {
+    try { return new URL(rawCallback).pathname }
+    catch { return rawCallback }
+  })()
   const [loading, setLoading] = useState(false)
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
@@ -40,7 +46,7 @@ export default function LoginPage() {
         return
       }
 
-      router.push("/dashboard")
+      router.push(callbackUrl)
     } finally {
       setLoading(false)
     }

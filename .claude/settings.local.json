@@ -7,7 +7,12 @@
       "Bash(Select-Object Name, FullName)",
       "Bash(xargs ls -lS)",
       "Bash(xargs wc -l)",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "PowerShell(Receive-Job *)",
+      "Bash(timeout 35 npx next dev --port 3001)",
+      "Bash(wait)",
+      "Bash(curl -s http://localhost:3000/api/auth/providers)",
+      "Bash(curl *)"
     ]
   }
 }
