@@ -65,13 +65,13 @@ export default function EstimatesPage() {
   })
 
   useEffect(() => {
-    if (authLoading || !eventId) return
+    if (authLoading || !eventId || !clientPin) return
 
-    fetch(`/api/eventos/${eventId}/estimativas`)
-      .then(r => r.json())
+    fetch(`/api/eventos/${eventId}/estimativas?pin=${clientPin}`)
+      .then(r => r.ok ? r.json() : null)
       .then(data => { if (data?.id) setExisting(data) })
       .finally(() => setPageLoading(false))
-  }, [authLoading, eventId])
+  }, [authLoading, eventId, clientPin])
 
   const selectedStyles = watch("weddingStyles") as string[]
   const selectedPriorities = watch("priorities") as string[]

@@ -10,7 +10,14 @@ const proposalSchema = z.object({
 type Context = { params: Promise<{ id: string }> }
 
 export async function GET(req: NextRequest, { params }: Context) {
+  const session = await auth()
+  if (!session?.user?.id) return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
+
   const { id } = await params
+
+  const event = await prisma.event.findFirst({ where: { id, producerId: session.user.id } })
+  if (!event) return NextResponse.json({ error: "Evento não encontrado" }, { status: 404 })
+
   const proposal = await prisma.proposal.findUnique({ where: { eventId: id } })
   return NextResponse.json(proposal)
 }

@@ -1,6 +1,12 @@
+import type { Metadata } from "next"
+import Link from "next/link"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { EventCard } from "@/components/events/EventCard"
+
+export const metadata: Metadata = {
+  title: "Dashboard · Wedding Manager",
+}
 
 export default async function DashboardPage() {
   const session = await auth()
@@ -45,17 +51,17 @@ export default async function DashboardPage() {
 
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-medium text-lilac-800">Eventos</h2>
-        <a href="/eventos/novo" className="btn-primary text-sm px-4 py-2 rounded-full">
+        <Link href="/eventos/novo" className="btn-primary text-sm px-4 py-2 rounded-full">
           + Novo evento
-        </a>
+        </Link>
       </div>
 
       {events.length === 0 ? (
         <div className="glass-card p-12 text-center">
           <p className="text-lilac-400">Nenhum evento cadastrado ainda.</p>
-          <a href="/eventos/novo" className="btn-primary inline-block mt-4 px-6 py-2 rounded-full">
+          <Link href="/eventos/novo" className="btn-primary inline-block mt-4 px-6 py-2 rounded-full">
             Criar primeiro evento
-          </a>
+          </Link>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

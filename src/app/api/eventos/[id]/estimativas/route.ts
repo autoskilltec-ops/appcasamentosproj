@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { z } from "zod"
 
@@ -16,9 +17,24 @@ type Context = { params: Promise<{ id: string }> }
 
 export async function GET(req: NextRequest, { params }: Context) {
   const { id } = await params
-  const estimate = await prisma.estimate.findUnique({
-    where: { eventId: id },
-  })
+  const pin = req.nextUrl.searchParams.get("pin")
+
+  const session = await auth()
+  const isProducer = !!session?.user?.id
+
+  if (!isProducer && (!pin || pin.length !== 6)) {
+    return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
+  }
+
+  if (pin) {
+    const event = await prisma.event.findFirst({ where: { id, pin } })
+    if (!event) return NextResponse.json({ error: "PIN inválido" }, { status: 403 })
+  } else {
+    const event = await prisma.event.findFirst({ where: { id, producerId: session!.user!.id } })
+    if (!event) return NextResponse.json({ error: "Não autorizado" }, { status: 403 })
+  }
+
+  const estimate = await prisma.estimate.findUnique({ where: { eventId: id } })
   return NextResponse.json(estimate)
 }
 

@@ -9,7 +9,7 @@ export default async function ProducerLayout({ children }: { children: React.Rea
   return (
     <div className="flex min-h-screen page-bg">
       <Sidebar producerName={session.user.name || "Produtor"} />
-      <main className="flex-1 ml-64 overflow-y-auto">
+      <main className="flex-1 md:ml-64 overflow-y-auto pt-14 md:pt-0">
         {children}
       </main>
     </div>

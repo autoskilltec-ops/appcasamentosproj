@@ -23,6 +23,7 @@ export default function ChecklistPage() {
   const [loading, setLoading] = useState(true)
   const [filterType, setFilterType] = useState("ALL")
   const [filterSupplier, setFilterSupplier] = useState("ALL")
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
 
   const fetchItems = useCallback(async () => {
     const res = await fetch(`/api/eventos/${id}/checklist`)
@@ -58,9 +59,14 @@ export default function ChecklistPage() {
   }
 
   async function handleDelete(itemId: string) {
-    if (!confirm("Remover este item?")) return
-    await fetch(`/api/eventos/${id}/checklist/${itemId}`, { method: "DELETE" })
+    setPendingDeleteId(itemId)
+  }
+
+  async function confirmDelete() {
+    if (!pendingDeleteId) return
+    await fetch(`/api/eventos/${id}/checklist/${pendingDeleteId}`, { method: "DELETE" })
     toast.success("Item removido")
+    setPendingDeleteId(null)
     fetchItems()
   }
 
@@ -180,6 +186,33 @@ export default function ChecklistPage() {
           onSave={handleSave}
           onClose={() => { setShowForm(false); setEditingItem(null) }}
         />
+      )}
+
+      {/* Dialog de confirmação de exclusão */}
+      {pendingDeleteId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.30)", backdropFilter: "blur(4px)" }}>
+          <div className="glass-card p-6 max-w-sm w-full text-center">
+            <p className="font-medium text-lilac-800 mb-1">Remover item?</p>
+            <p className="text-sm text-lilac-500 mb-5">Esta ação não pode ser desfeita.</p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setPendingDeleteId(null)}
+                className="flex-1 py-2 rounded-2xl text-sm text-lilac-500 hover:text-lilac-700 transition-colors"
+                style={{ background: "rgba(255,255,255,0.4)" }}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="flex-1 py-2 rounded-2xl text-sm font-medium text-white transition-opacity hover:opacity-90"
+                style={{ background: "linear-gradient(135deg,#c2607e,#a04d67)" }}
+              >
+                Remover
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

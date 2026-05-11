@@ -21,13 +21,19 @@ export async function PUT(req: NextRequest, { params }: Context) {
   const session = await auth()
   if (!session?.user?.id) return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
 
-  const { itemId } = await params
+  const { id: eventId, itemId } = await params
   try {
     const body = await req.json()
     const data = updateSchema.parse(body)
 
-    const existing = await prisma.checklistItem.findUnique({ where: { id: itemId } })
+    const existing = await prisma.checklistItem.findUnique({
+      where: { id: itemId },
+      include: { event: { select: { producerId: true } } },
+    })
     if (!existing) return NextResponse.json({ error: "Item não encontrado" }, { status: 404 })
+    if (existing.event.producerId !== session.user.id) {
+      return NextResponse.json({ error: "Não autorizado" }, { status: 403 })
+    }
 
     const newQty = data.quantity ?? existing.quantity
     const newPrice = data.unitPrice ?? existing.unitPrice
@@ -53,6 +59,16 @@ export async function DELETE(req: NextRequest, { params }: Context) {
   if (!session?.user?.id) return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
 
   const { itemId } = await params
+
+  const item = await prisma.checklistItem.findUnique({
+    where: { id: itemId },
+    include: { event: { select: { producerId: true } } },
+  })
+  if (!item) return NextResponse.json({ error: "Item não encontrado" }, { status: 404 })
+  if (item.event.producerId !== session.user.id) {
+    return NextResponse.json({ error: "Não autorizado" }, { status: 403 })
+  }
+
   await prisma.checklistItem.delete({ where: { id: itemId } })
   return NextResponse.json({ success: true })
 }
