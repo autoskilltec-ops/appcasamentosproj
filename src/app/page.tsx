@@ -139,7 +139,7 @@ export default function LandingPage() {
           >
             <Sparkles size={14} className="text-white" />
           </div>
-          <span className="font-serif text-lg text-lilac-800 tracking-wide">Wedding Manager</span>
+          <span className="font-serif text-lg text-lilac-800 tracking-wide">Véu & Plano</span>
         </div>
 
         <div className="flex items-center gap-1">
@@ -407,7 +407,7 @@ export default function LandingPage() {
       {/* ── Footer ── */}
       <footer className="relative z-10 text-center pb-5">
         <p className="text-xs text-lilac-300 tracking-wide">
-          © {new Date().getFullYear()} Wedding Manager · Feito com cuidado
+          © {new Date().getFullYear()} Véu & Plano · Feito com cuidado
         </p>
       </footer>
     </div>

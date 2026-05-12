@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma"
 import { EventCard } from "@/components/events/EventCard"
 
 export const metadata: Metadata = {
-  title: "Dashboard · Wedding Manager",
+  title: "Dashboard · Véu & Plano",
 }
 
 export default async function DashboardPage() {

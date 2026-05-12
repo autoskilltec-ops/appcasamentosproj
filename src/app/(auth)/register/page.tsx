@@ -60,7 +60,7 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-50 via-lilac-50 to-rose-100">
       <div className="glass-card w-full max-w-md p-8">
         <div className="text-center mb-8">
-          <h1 className="font-serif text-3xl text-lilac-800 mb-2">Wedding Manager</h1>
+          <h1 className="font-serif text-3xl text-lilac-800 mb-2">Véu & Plano</h1>
           <p className="text-sm text-lilac-500">Criar conta de produtor</p>
         </div>
 

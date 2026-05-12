@@ -39,13 +39,19 @@ export function ChecklistItemForm({ item, onSave, onClose }: Props) {
   const price = watch("unitPrice") || 0
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="glass-card w-full max-w-xl p-6 relative">
-        <button onClick={onClose} className="absolute top-4 right-4 text-lilac-400 hover:text-lilac-600">
+    <div className="fixed inset-0 flex items-center justify-center z-50 p-4"
+      style={{ background: "rgba(15, 5, 30, 0.55)", backdropFilter: "blur(6px)" }}>
+      <div className="w-full max-w-xl p-6 relative overflow-y-auto max-h-[90vh]"
+        style={{
+          background: "#ffffff",
+          borderRadius: "20px",
+          boxShadow: "0 24px 64px rgba(0,0,0,0.22), 0 0 0 1px rgba(180,140,220,0.15)",
+        }}>
+        <button onClick={onClose} className="absolute top-4 right-4 text-lilac-300 hover:text-lilac-600 transition-colors">
           <X size={20} />
         </button>
 
-        <h2 className="font-serif text-xl text-lilac-800 mb-6">
+        <h2 className="font-serif text-xl text-lilac-800 mb-6 pr-8">
           {item ? "Editar item" : "Novo item"}
         </h2>
 

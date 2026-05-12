@@ -16,7 +16,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Wedding Manager",
+  title: "Véu & Plano",
   description: "Plataforma de gerenciamento de eventos de casamento",
 };
 
