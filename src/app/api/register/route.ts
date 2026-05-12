@@ -10,22 +10,32 @@ const schema = z.object({
 })
 
 export async function POST(req: Request) {
-  const body = await req.json()
-  const parsed = schema.safeParse(body)
+  let body: unknown
+  try {
+    body = await req.json()
+  } catch {
+    return NextResponse.json({ error: "Requisição inválida" }, { status: 400 })
+  }
 
+  const parsed = schema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json({ error: "Dados inválidos" }, { status: 400 })
   }
 
   const { name, email, password } = parsed.data
 
-  const existing = await prisma.producer.findUnique({ where: { email } })
-  if (existing) {
-    return NextResponse.json({ error: "E-mail já cadastrado" }, { status: 409 })
+  try {
+    const existing = await prisma.producer.findUnique({ where: { email } })
+    if (existing) {
+      return NextResponse.json({ error: "E-mail já cadastrado" }, { status: 409 })
+    }
+
+    const hashed = await bcrypt.hash(password, 12)
+    await prisma.producer.create({ data: { name, email, password: hashed } })
+
+    return NextResponse.json({ ok: true }, { status: 201 })
+  } catch (err) {
+    console.error("[register] Erro ao criar produtor:", err)
+    return NextResponse.json({ error: "Erro interno ao criar conta" }, { status: 500 })
   }
-
-  const hashed = await bcrypt.hash(password, 12)
-  await prisma.producer.create({ data: { name, email, password: hashed } })
-
-  return NextResponse.json({ ok: true }, { status: 201 })
 }

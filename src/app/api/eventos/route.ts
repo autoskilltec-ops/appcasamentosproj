@@ -20,27 +20,32 @@ export async function GET(req: NextRequest) {
   const status = searchParams.get("status")
   const search = searchParams.get("search")
 
-  const events = await prisma.event.findMany({
-    where: {
-      producerId: session.user.id,
-      ...(status ? { status: status as any } : {}),
-      ...(search ? {
-        OR: [
-          { groomName: { contains: search, mode: "insensitive" } },
-          { brideName: { contains: search, mode: "insensitive" } },
-          { venueName: { contains: search, mode: "insensitive" } },
-        ],
-      } : {}),
-    },
-    include: {
-      estimate: { select: { guestCount: true, budgetMin: true, budgetMax: true } },
-      proposal: { select: { viewedByClient: true } },
-      _count: { select: { checklistItems: true } },
-    },
-    orderBy: { weddingDate: "asc" },
-  })
+  try {
+    const events = await prisma.event.findMany({
+      where: {
+        producerId: session.user.id,
+        ...(status ? { status: status as any } : {}),
+        ...(search ? {
+          OR: [
+            { groomName: { contains: search, mode: "insensitive" } },
+            { brideName: { contains: search, mode: "insensitive" } },
+            { venueName: { contains: search, mode: "insensitive" } },
+          ],
+        } : {}),
+      },
+      include: {
+        estimate: { select: { guestCount: true, budgetMin: true, budgetMax: true } },
+        proposal: { select: { viewedByClient: true } },
+        _count: { select: { checklistItems: true } },
+      },
+      orderBy: { weddingDate: "asc" },
+    })
 
-  return NextResponse.json(events)
+    return NextResponse.json(events)
+  } catch (err) {
+    console.error("[eventos] Erro ao buscar eventos:", err)
+    return NextResponse.json({ error: "Erro interno ao buscar eventos" }, { status: 500 })
+  }
 }
 
 export async function POST(req: NextRequest) {

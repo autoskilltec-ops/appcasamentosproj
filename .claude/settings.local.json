@@ -12,7 +12,17 @@
       "Bash(timeout 35 npx next dev --port 3001)",
       "Bash(wait)",
       "Bash(curl -s http://localhost:3000/api/auth/providers)",
-      "Bash(curl *)"
+      "Bash(curl *)",
+      "Bash(Start-Sleep -Seconds 15)",
+      "Bash(Get-Content \"C:\\\\Users\\\\SEGOV~1.CTI\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-SEGOV-CTI-01001010-OneDrive--rea-de-Trabalho-appcasamentosproj-appcasamentosproj\\\\7e8f983e-908a-409d-b09a-1086f3866738\\\\tasks\\\\b60j5k4ff.output\")",
+      "PowerShell(Get-Process *)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(echo \"3001: $?\")",
+      "Bash(echo \"3000: $?\")",
+      "Bash(npx tsx --env-file=.env.local -e ' *)",
+      "Bash(npx tsx *)",
+      "Bash(npx next *)",
+      "Bash(echo \"---CURL_EXIT:$?---\")"
     ]
   }
 }
