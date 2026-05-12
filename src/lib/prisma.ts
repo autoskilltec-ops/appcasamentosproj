@@ -7,9 +7,13 @@ const globalForPrisma = globalThis as unknown as {
 }
 
 function createPrismaClient() {
+  if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL não está definida nas variáveis de ambiente.')
+  }
   const pool = new Pool({
-    connectionString: process.env.DATABASE_URL!,
+    connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false },
+    max: 1, // serverless: limita conexões por instância
   })
   const adapter = new PrismaPg(pool)
   return new PrismaClient({
@@ -20,4 +24,5 @@ function createPrismaClient() {
 
 export const prisma = globalForPrisma.prisma ?? createPrismaClient()
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+// Persistir o client no globalThis para evitar recriação em hot-reload (dev) e cold-starts (prod)
+globalForPrisma.prisma = prisma

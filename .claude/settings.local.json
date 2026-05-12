@@ -22,7 +22,9 @@
       "Bash(npx tsx --env-file=.env.local -e ' *)",
       "Bash(npx tsx *)",
       "Bash(npx next *)",
-      "Bash(echo \"---CURL_EXIT:$?---\")"
+      "Bash(echo \"---CURL_EXIT:$?---\")",
+      "mcp__claude_ai_Vercel__list_teams",
+      "mcp__claude_ai_Vercel__list_projects"
     ]
   }
 }
