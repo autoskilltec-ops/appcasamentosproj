@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
@@ -18,7 +18,7 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const rawCallback = searchParams.get("callbackUrl") || "/dashboard"
@@ -53,6 +53,28 @@ export default function LoginPage() {
   }
 
   return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <div>
+        <Label htmlFor="email">E-mail</Label>
+        <Input id="email" type="email" {...register("email")} className="glass-input mt-1" />
+        {errors.email && <p className="text-rose-500 text-xs mt-1">{errors.email.message}</p>}
+      </div>
+
+      <div>
+        <Label htmlFor="password">Senha</Label>
+        <Input id="password" type="password" {...register("password")} className="glass-input mt-1" />
+        {errors.password && <p className="text-rose-500 text-xs mt-1">{errors.password.message}</p>}
+      </div>
+
+      <Button type="submit" disabled={loading} className="w-full btn-primary mt-6">
+        {loading ? "Entrando..." : "Entrar"}
+      </Button>
+    </form>
+  )
+}
+
+export default function LoginPage() {
+  return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-50 via-lilac-50 to-rose-100">
       <div className="glass-card w-full max-w-md p-8">
         <div className="text-center mb-8">
@@ -60,23 +82,9 @@ export default function LoginPage() {
           <p className="text-sm text-lilac-500">Acesso do produtor</p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div>
-            <Label htmlFor="email">E-mail</Label>
-            <Input id="email" type="email" {...register("email")} className="glass-input mt-1" />
-            {errors.email && <p className="text-rose-500 text-xs mt-1">{errors.email.message}</p>}
-          </div>
-
-          <div>
-            <Label htmlFor="password">Senha</Label>
-            <Input id="password" type="password" {...register("password")} className="glass-input mt-1" />
-            {errors.password && <p className="text-rose-500 text-xs mt-1">{errors.password.message}</p>}
-          </div>
-
-          <Button type="submit" disabled={loading} className="w-full btn-primary mt-6">
-            {loading ? "Entrando..." : "Entrar"}
-          </Button>
-        </form>
+        <Suspense fallback={<div className="h-40 flex items-center justify-center text-lilac-400 text-sm">Carregando...</div>}>
+          <LoginForm />
+        </Suspense>
 
         <div className="mt-6 pt-6 border-t border-lilac-200 text-center space-y-2">
           <p className="text-xs text-lilac-400">
